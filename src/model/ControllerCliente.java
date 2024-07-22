@@ -12,12 +12,9 @@ public class ControllerCliente {
     private UCliente cliente;
     private Loja loja = Loja.getInstancia();
     private PagamentoStrategy pagamento;
+    private Pedido pedidoAtual;
     private double valorCarrinho;    
-    private final Map<Integer, PagamentoStrategy> metodosPagamentoConcreto = Map.of( // Parte da impletementação do Strategy
-            PagamentoStrategy.PIX, new PagamentoPix(),
-            PagamentoStrategy.PICPAY, new PagamentoPicPay(),
-            PagamentoStrategy.CARTAO, new PagamentoCartao()           
-    );
+
     
     public ControllerCliente(){}
     
@@ -45,13 +42,19 @@ public class ControllerCliente {
         return this.cliente.listarProdutosNoCarrinho();
     }
     
-    public double fecharPedido(){
-        this.valorCarrinho =  this.cliente.fecharPedido();
-        return this.valorCarrinho;
+    public double valorCarrinho(){
+        return cliente.calcularCarrinho();
+    }
+      
+    public Pedido fecharPedido(){
+        this.pedidoAtual = fecharPedido();
+        this.valorCarrinho = pedidoAtual.valorTotalPedido();
+        return this.pedidoAtual;
     }
     
-    public void escolherPagamento(int pagamentoStrategy){
-        this.pagamento = metodosPagamentoConcreto.get(pagamentoStrategy);
+    public PagamentoStrategy escolherPagamento(int pagamentoStrategy){
+        this.pagamento = cliente.escolherPagamento(pagamentoStrategy);
+        return this.pagamento;
     }
     
     public void finalizarPedido(){

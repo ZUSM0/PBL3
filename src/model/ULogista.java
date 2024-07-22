@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class ULogista extends Usuario{
     static private ULogista instance = null; 
-    Estoque estoque;
+    Estoque estoque = Estoque.getInstancia();
     
     private ULogista(String login, String senha) { // Singleton?
         super(login, senha);

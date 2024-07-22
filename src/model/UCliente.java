@@ -1,13 +1,25 @@
 package model;
 
+import model.Strategy.PagamentoCartao;
+import model.Strategy.PagamentoPicPay;
+import model.Strategy.PagamentoPix;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+
 
 public class UCliente extends Usuario {
     private String nome;
     private String endereco;
     private ArrayList<Itens> carrinho = new ArrayList<>();
     private ArrayList<Pedido> pedidos = new ArrayList<>();
+    private PagamentoStrategy pagamento;
+    private final Map<Integer, PagamentoStrategy> metodosPagamentoConcreto = Map.of( // Parte da impletementação do Strategy
+            PagamentoStrategy.PIX, new PagamentoPix(),
+            PagamentoStrategy.PICPAY, new PagamentoPicPay(),
+            PagamentoStrategy.CARTAO, new PagamentoCartao()           
+    );
 
     public UCliente(String nome, String login, String senha, String endereco) {
         super(login, senha);
@@ -36,16 +48,25 @@ public class UCliente extends Usuario {
         return this.carrinho.iterator();
     }
     
-    public double fecharPedido(){
+    public Pedido fecharPedido(){
         Pedido pedido = new Pedido(this.carrinho);
         pedidos.add(pedido);
-        double valor = this.calcularCarrinho();
-        this.carrinho.clear();
 
-        return valor; // retorna valor total do carrinho e limpa o carrinho
+        return pedido;
     }
     
-    //Cliente precisa poder realizar pagamento. Só transferir o codigo do controller para cá
+    public PagamentoStrategy escolherPagamento(int pagamentoStrategy){
+        this.pagamento = this.metodosPagamentoConcreto.get(pagamentoStrategy);
+        return this.pagamento;
+    }
+    
+    public boolean realizarPagamento(double valorCarrinho, Pedido pedido, Object... dados){
+        if(pagamento.pagar(valorCarrinho, dados)){
+            loja.realizarPagamento(pedido, this.pagamento);
+            return true;
+        }
+        return false;
+    }
     
     // Métodos auxiliares!
     public double calcularCarrinho(){

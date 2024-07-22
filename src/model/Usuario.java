@@ -3,12 +3,11 @@ package model;
 public abstract class Usuario {
     protected String login;
     protected String senha;
-    protected Loja loja;
+    protected Loja loja = Loja.getInstancia();
     
     public Usuario(String login, String senha){
         this.login = login;
         this.senha = senha;
-
     }
     
     // Getters e Setters!

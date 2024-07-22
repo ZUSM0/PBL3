@@ -38,12 +38,9 @@ public class ControllerClienteTest {
         u1 = ccl.cadastrarUsuario("João", "joao", "123", "Irara");
         assertEquals(u1.getLogin(), "joao");
         Loja loja = Loja.getInstancia();
-        assertEquals(u1.loja, loja);
+        assertEquals(loja, u1.getLoja());
     }
 
-    /**
-     * Test of fazerLogin method, of class ControllerCliente.
-     */
     @Test
     public void testFazerLogin() {
         u1 = ccl.cadastrarUsuario("João", "João", "123", "Enderereco1");

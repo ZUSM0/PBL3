@@ -7,16 +7,13 @@ import java.util.Iterator;
 
 public class Estoque implements EstoqueComposite{
     private String categoria = "Geral";
-    private static Estoque instancia = null;
+    private static Estoque instancia = new Estoque();
     private ULogista logista = ULogista.getInstance();
     private ArrayList<EstoqueComposite> produtos = new ArrayList<>();
     
     private Estoque(){}
     
     public static Estoque getInstancia(){ // Padrão Singleton
-        if(Estoque.instancia == null){
-            Estoque.instancia = new Estoque();
-        }
         return Estoque.instancia;
     }
        
