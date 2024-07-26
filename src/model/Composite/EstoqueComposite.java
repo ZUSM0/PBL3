@@ -10,6 +10,8 @@ public interface EstoqueComposite { // Parte da implementação do Padrão compo
     
     public boolean removerProdutoNoEstoque(Produto produto);
     
+    public void reduzProdutoNoEstoque(Produto produto, int comprados);
+    
     public Iterator<Produto> listarProdutoNoEstoque();
     
     public String getCategoria();

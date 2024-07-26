@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 public class Loja {
     static private Loja instancia = new Loja();
-    private Estoque estoque;
+    private Estoque estoque = Estoque.getInstancia();
     private UCliente cliente;
     private ArrayList<UCliente> clientes = new ArrayList<UCliente>();
     private ULogista logista = ULogista.getInstance();
@@ -52,11 +52,18 @@ public class Loja {
         return estoque.listarProdutoNoEstoque(categoria);
     }
     
-    public void realizarPagamento(Pedido pedido, PagamentoStrategy metodoPagamento){
+    public void reduzProdutoNoEstoque(Produto produto, int comprados){
+        estoque.reduzProdutoNoEstoque(produto, comprados);
+    }
+    
+    public void registrarVenda(Pedido pedido, PagamentoStrategy metodoPagamento){
         Venda venda = new Venda(pedido, pedido.valorTotalPedido(), metodoPagamento);
         vendas.add(venda);
     }
     
+    public Iterator<Venda> listarVendasNaLoja(){
+        return this.vendas.iterator();
+    }
     
     // Getters e Setters!
     

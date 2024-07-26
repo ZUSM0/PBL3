@@ -26,6 +26,20 @@ public class EstoqueCategoria implements EstoqueComposite {
     }
     
     @Override
+    public void reduzProdutoNoEstoque(Produto produto, int comprados){
+        Iterator iterator = produtosCategoria.iterator();
+        while (iterator.hasNext()) {
+            Produto produtoAtual = (Produto) iterator.next();
+            if (produtoAtual.equals(produto)) {
+                produtoAtual.setEstoque(comprados);
+                if (produtoAtual.getQuantEstoque() <= 0) {
+                    iterator.remove(); 
+                }
+            }
+        }
+    }
+    
+    @Override
     public Iterator<Produto> listarProdutoNoEstoque() {
         return produtosCategoria.iterator();
     }

@@ -28,9 +28,13 @@ public class UCliente extends Usuario {
     }
     
     // Métodos principais!
-    public void adicionarProdutoNoCarrinho(Produto produto, int quantidade){
-        Itens item = new Itens(produto, quantidade, produto.getPreco());
-        carrinho.add(item);
+    public boolean adicionarProdutoNoCarrinho(Produto produto, int quantidade){
+        if(produto.getQuantEstoque() >= quantidade){
+            Itens item = new Itens(produto, quantidade, produto.getPreco());
+            carrinho.add(item);
+            return true;
+        }
+        return false;
     }
     
     public boolean removerProdutoNoCarrinho(Produto produto){ 
@@ -51,7 +55,6 @@ public class UCliente extends Usuario {
     public Pedido fecharPedido(){
         Pedido pedido = new Pedido(this.carrinho);
         pedidos.add(pedido);
-
         return pedido;
     }
     
@@ -60,12 +63,8 @@ public class UCliente extends Usuario {
         return this.pagamento;
     }
     
-    public boolean realizarPagamento(double valorCarrinho, Pedido pedido, Object... dados){
-        if(pagamento.pagar(valorCarrinho, dados)){
-            loja.realizarPagamento(pedido, this.pagamento);
-            return true;
-        }
-        return false;
+    public boolean realizarPagamento(double valorCarrinho, Object... dados){
+        return this.pagamento.pagar(valorCarrinho, dados);
     }
     
     // Métodos auxiliares!
@@ -77,6 +76,10 @@ public class UCliente extends Usuario {
             valor += item.getPreco()*item.getQuantidade();
         }
         return valor;
+    }
+    
+    public void limparCarrinho(){
+        this.carrinho.clear();
     }
     
     //GETTERS E SETTERS!

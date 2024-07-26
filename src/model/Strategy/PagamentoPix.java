@@ -9,7 +9,7 @@ public class PagamentoPix implements PagamentoStrategy {
     }
     
     @Override
-    public boolean pagar(double valor, Object... dados) {       
+    public boolean pagar(double valor, Object... dados) { 
         if(dados.length == 1){
             this.valor = valor;
             this.chavePix = (String) dados[0];

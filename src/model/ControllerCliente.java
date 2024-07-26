@@ -1,12 +1,6 @@
 package model;
 
 import java.util.Iterator;
-import model.Strategy.PagamentoCartao;
-import model.Strategy.PagamentoPicPay;
-import model.Strategy.PagamentoPix;
-
-import java.util.Map;
-
 
 public class ControllerCliente {
     private UCliente cliente;
@@ -15,7 +9,6 @@ public class ControllerCliente {
     private Pedido pedidoAtual;
     private double valorCarrinho;    
 
-    
     public ControllerCliente(){}
     
     //Métodos gerais!
@@ -30,8 +23,8 @@ public class ControllerCliente {
         return this.cliente;
     }
     
-    public void adicionarProdutoNoCarrinho(Produto produto, int quantidade){
-        cliente.adicionarProdutoNoCarrinho(produto, quantidade);
+    public boolean adicionarProdutoNoCarrinho(Produto produto, int quantidade){
+        return cliente.adicionarProdutoNoCarrinho(produto, quantidade);
     }
     
     public boolean removerProdutoNoCarrinho(Produto produto){
@@ -47,7 +40,7 @@ public class ControllerCliente {
     }
       
     public Pedido fecharPedido(){
-        this.pedidoAtual = fecharPedido();
+        this.pedidoAtual = this.cliente.fecharPedido();
         this.valorCarrinho = pedidoAtual.valorTotalPedido();
         return this.pedidoAtual;
     }
@@ -57,14 +50,22 @@ public class ControllerCliente {
         return this.pagamento;
     }
     
-    public void finalizarPedido(){
-        // Precisa??? Talvez sim para limpar o carrinho. Carrinho só é limpo quando a venda acabar
+    private void finalizarPedido(){
+        loja.registrarVenda(pedidoAtual, this.pagamento); 
+        this.cliente.limparCarrinho();
     }
     
     public boolean realizarPagamento(Object... dados){
-        // Lembrar de fazer redução no estoque, somente se o pagamento for comprovado
-        // A classe Venda é chamada aqui também
-        return pagamento.pagar(this.valorCarrinho, dados);
+        if(this.cliente.realizarPagamento(this.valorCarrinho, dados)){ // Se o pagamento for aprovado, fazemos a redução do estoque.
+            Iterator iterator = pedidoAtual.listarProdutosCarrinho();
+            while(iterator.hasNext()){
+                Itens item = (Itens)iterator.next();
+                loja.reduzProdutoNoEstoque(item.getProduto(), item.getQuantidade());
+            }          
+            this.finalizarPedido();// Após o pagamento aprovado e os produtos terem sido reduzidos do estoque, a venda é registrada pela loja e o carrinho é limpo.
+            return true;
+        }
+        return false;
     }
     
 }

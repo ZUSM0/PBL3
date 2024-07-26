@@ -9,7 +9,7 @@ public class Estoque implements EstoqueComposite{
     private String categoria = "Geral";
     private static Estoque instancia = new Estoque();
     private ULogista logista = ULogista.getInstance();
-    private ArrayList<EstoqueComposite> produtos = new ArrayList<>();
+    private ArrayList<EstoqueComposite> produtosCategoria = new ArrayList<>();
     
     private Estoque(){}
     
@@ -19,21 +19,24 @@ public class Estoque implements EstoqueComposite{
        
     @Override
     public EstoqueComposite adicionarProdutoNoEstoque(Produto produto){
-        for(EstoqueComposite componente: produtos){
-            if(componente.getCategoria().equals(produto.getTipo())){
-                produtos.add(componente);
-                return componente.adicionarProdutoNoEstoque(produto);       
+        
+        Iterator<EstoqueComposite> iterator = produtosCategoria.iterator();
+        while (iterator.hasNext()) { // Percorre todas as categorias do estoque...
+            EstoqueComposite componente = iterator.next();
+            if (componente.getCategoria().equals(produto.getTipo())) { // E procura a categoria que guarda o mesmo tipo do produto que foi passado.
+                return componente.adicionarProdutoNoEstoque(produto);  
             }
         }
-        EstoqueComposite componente = new EstoqueCategoria(produto.getTipo());
-        produtos.add(componente);
+        
+        EstoqueComposite componente = new EstoqueCategoria(produto.getTipo()); // Se não achar, criamos uma nova categoria para guardar o produto.
+        produtosCategoria.add(componente);
         return componente.adicionarProdutoNoEstoque(produto);
         
     }
     
     @Override
     public boolean removerProdutoNoEstoque(Produto produto){
-        for(EstoqueComposite componente: produtos){
+        for(EstoqueComposite componente: produtosCategoria){
             if(componente.getCategoria().equals(produto.getTipo())){
                return componente.removerProdutoNoEstoque(produto);                      
             }
@@ -42,10 +45,19 @@ public class Estoque implements EstoqueComposite{
     }
     
     @Override
-    public Iterator<Produto> listarProdutoNoEstoque(){
+    public void reduzProdutoNoEstoque(Produto produto, int quant){
+        for(EstoqueComposite componente: produtosCategoria){
+            if(componente.getCategoria().equals(produto.getTipo())){
+               componente.reduzProdutoNoEstoque(produto, quant);
+            }
+        }
+    }
+    
+    @Override
+    public Iterator<Produto> listarProdutoNoEstoque(){ // Retorna todos os produtos do estoque independente da categoria.
         ArrayList<Produto> produtosGerais = new ArrayList<>();
-        for(EstoqueComposite componente: produtos){
-            Iterator iterator = componente.listarProdutoNoEstoque();
+        for(EstoqueComposite componente: produtosCategoria){
+            Iterator<Produto> iterator = componente.listarProdutoNoEstoque();
             while(iterator.hasNext()){
                 produtosGerais.add((Produto) iterator.next());
             }
@@ -53,8 +65,8 @@ public class Estoque implements EstoqueComposite{
         return produtosGerais.iterator();
     }
     
-    public Iterator<Produto> listarProdutoNoEstoque(String categoria){
-        for(EstoqueComposite componente: produtos){
+    public Iterator<Produto> listarProdutoNoEstoque(String categoria){ // Exemplo de sobrecarga de método, retorna todos os produtos de uma categoria especifica.
+        for(EstoqueComposite componente: produtosCategoria){
             if(componente.getCategoria().equals(categoria)){
                return componente.listarProdutoNoEstoque();                      
             }

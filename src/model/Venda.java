@@ -11,8 +11,17 @@ public class Venda {
         this.metodoPagamento = metodoPagamento;
     }
     
-    public void processarVenda(){
-        
+    // Getters e Setters!
+    public Pedido getPedido(){
+        return this.pedido;
+    }
+    
+    public double getValorTotalpedido(){
+        return this.valorTotalPedido;
+    }
+    
+    public PagamentoStrategy getPagamento(){
+        return this.metodoPagamento;
     }
         
 }
